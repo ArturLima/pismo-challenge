@@ -1,0 +1,11 @@
+# Arquivos/dirs desnecessários para a imagem
+*.log
+*.tmp
+*.test
+*.out
+vendor/
+.git
+.vscode/
+.idea/
+.DS_Store
+.env

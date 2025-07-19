@@ -11,6 +11,19 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
 
+  app:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "3080:3080" 
+    environment:
+      PISMO_DATABASE_USER: ${PISMO_DATABASE_USER}
+      PISMO_DATABASE_PASSWORD: ${PISMO_DATABASE_PASSWORD}
+      PISMO_DATABASE_HOST: db
+      PISMO_DATABASE_PORT: 5432
+      PISMO_DATABASE_NAME: ${PISMO_DATABASE_NAME}
+
 volumes:
   db:
     driver: local

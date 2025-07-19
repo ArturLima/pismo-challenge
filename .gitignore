@@ -1,0 +1,62 @@
+# Executáveis/bins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+main
+
+# Diretórios comuns de build/output
+/bin/
+/build/
+/dist/
+
+# Dependências de IDE/editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Arquivos temporários
+*~
+*.tmp
+*.log
+
+# Cache do Go
+*.mod
+*.sum
+go.sum
+go.work
+go.work.sum
+
+# Diretórios de dependência e cache
+vendor/
+pkg/
+.coverage/
+.coverage.out
+*.coverprofile
+*.cover.out
+
+# Saída do teste
+*.test
+*.prof
+*.profile
+
+# Documentação gerada
+/docs/
+
+# Arquivos de ambiente
+.env
+.env.*
+
+# Arquivos do Docker
+*.tar
+
+# SQLC
+sqlc.gen.go
+
+# Outros padrões
+.DS_Store
+Thumbs.db

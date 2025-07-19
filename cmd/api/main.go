@@ -7,16 +7,12 @@ import (
 	"os"
 
 	"github.com/ArturLima/pismo/internal/api"
+	"github.com/ArturLima/pismo/internal/services"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-
-	if err := godotenv.Load(); err != nil {
-		panic("Error loading .env file")
-	}
 
 	ctx := context.Background()
 	pool, err := pgxpool.New(ctx, fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s",
@@ -36,13 +32,15 @@ func main() {
 	}
 
 	api := api.Api{
-		Router: chi.NewMux(),
+		Router:             chi.NewMux(),
+		AccountService:     services.NewAccountService(pool),
+		TransactionService: services.NewTransactionService(pool),
 	}
 
 	api.BindRoutes()
 
 	fmt.Println("Start server on port: 3080")
-	if err := http.ListenAndServe("localhost:3080", nil); err != nil {
+	if err := http.ListenAndServe(":3080", api.Router); err != nil {
 		panic(err)
 	}
 }
