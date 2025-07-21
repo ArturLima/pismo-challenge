@@ -44,9 +44,6 @@ pkg/
 *.prof
 *.profile
 
-# Documentação gerada
-/docs/
-
 # Arquivos de ambiente
 .env
 .env.*

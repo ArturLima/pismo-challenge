@@ -1,0 +1,139 @@
+definitions:
+  account.AccountResponse:
+    properties:
+      created_at:
+        type: string
+      document_number:
+        type: string
+      id:
+        type: integer
+    type: object
+  account.CreateAccountRequest:
+    properties:
+      document:
+        type: string
+    type: object
+  transaction.CreateTransactionRequest:
+    properties:
+      account_id:
+        type: integer
+      amount:
+        type: string
+      operation_type:
+        type: integer
+    type: object
+  transaction.TransactionResponse:
+    properties:
+      account_id:
+        type: integer
+      amount:
+        type: string
+      operation_type:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: pismo endpoint 2.
+  title: Pismo API
+  version: "1.0"
+paths:
+  /accounts:
+    post:
+      consumes:
+      - application/json
+      description: Create a new account with the provided document number.
+      parameters:
+      - description: Account data
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/account.CreateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/account.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create Account
+      tags:
+      - accounts
+  /accounts/{accountId}:
+    get:
+      description: Get account information by ID.
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/account.AccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Account
+      tags:
+      - accounts
+  /transactions:
+    post:
+      consumes:
+      - application/json
+      description: Create a new transaction (purchase, withdrawal, credit) for an
+        account.
+      parameters:
+      - description: Transaction data
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/transaction.CreateTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/transaction.TransactionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create Transaction
+      tags:
+      - transactions
+swagger: "2.0"
