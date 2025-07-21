@@ -5,11 +5,11 @@ services:
     image: postgres:latest
     restart: unless-stopped
     ports:
-      - "${PISMO_DATABASE_PORT:-5432}:5432"
+      - ${PISMO_DATABASE_PORT:-5432}:5432
     environment:
-      POSTGRES_USER: "${PISMO_DATABASE_USER}"
-      POSTGRES_PASSWORD: "${PISMO_DATABASE_PASSWORD}"
-      POSTGRES_DB: "${PISMO_DATABASE_NAME}"
+      POSTGRES_USER: ${PISMO_DATABASE_USER}
+      POSTGRES_PASSWORD: ${PISMO_DATABASE_PASSWORD}
+      POSTGRES_DB: ${PISMO_DATABASE_NAME}
     volumes:
       - db:/var/lib/postgresql/data
 
@@ -18,13 +18,13 @@ services:
     depends_on:
       - db
     ports:
-      - "3080:3080"
+      - 3080:3080
     environment:
-      PISMO_DATABASE_USER: "${PISMO_DATABASE_USER}"
-      PISMO_DATABASE_PASSWORD: "${PISMO_DATABASE_PASSWORD}"
+      PISMO_DATABASE_USER: ${PISMO_DATABASE_USER}
+      PISMO_DATABASE_PASSWORD: ${PISMO_DATABASE_PASSWORD}
       PISMO_DATABASE_HOST: db
       PISMO_DATABASE_PORT: 5432
-      PISMO_DATABASE_NAME: "${PISMO_DATABASE_NAME}"
+      PISMO_DATABASE_NAME: ${PISMO_DATABASE_NAME}
 
 volumes:
   db:
