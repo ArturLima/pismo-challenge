@@ -1,0 +1,75 @@
+# Pismo Challenge API
+
+A RESTful API for account and transaction management, built with Go, PostgreSQL, and Docker.
+
+## Features
+
+- Create and retrieve accounts
+- Create transactions
+- PostgreSQL persistence
+- Dockerized for easy setup
+- Interactive API documentation via Swagger
+
+## Requirements
+
+- Go 1.23+
+- Docker & Docker Compose
+- PostgreSQL
+
+## Getting Started
+
+### 1. Clone the repository
+
+```sh
+git clone https://github.com/ArturLima/pismo-challenge.git
+cd pismo-challenge
+```
+
+### 2. Configure environment variables
+
+Copy `.env_example` to `.env` and adjust as needed:
+
+```sh
+cp .env_example .env
+```
+
+### 3. Start services with Docker Compose
+
+```sh
+docker-compose up --build
+```
+
+The API will be available at `http://localhost:3080`.
+
+### 4. Run database migrations
+
+You can run migrations using the provided command:
+
+```sh
+go run ./cmd/terndotenv/main.go
+```
+
+## Documentação Swagger
+
+A documentação interativa da API está disponível via Swagger.  
+Após iniciar o projeto, acesse:
+
+```
+http://localhost:3080/swagger/index.html
+```
+
+Você pode visualizar e testar os endpoints diretamente pela interface Swagger.
+
+## API Endpoints
+
+- `POST /accounts` — Create a new account
+- `GET /accounts/{accountId}` — Retrieve account by ID
+- `POST /transactions` — Create a new transaction
+
+## Project Structure
+
+- `cmd/api/main.go` — API entrypoint
+- `internal/api/` — HTTP handlers and routing
+- `internal/services/` — Business logic
+- `internal/models/` — Data models
+- `docs/` — Swagger documentation
