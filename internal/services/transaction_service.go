@@ -9,19 +9,23 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+type transactionQueries interface {
+	CreateTransaction(ctx context.Context, request pgstore.CreateTransactionParams) (pgstore.Transaction, error)
+}
+
 type ITransactionService interface {
 	CreateTransaction(ctx context.Context, request transaction.CreateTransactionRequest) (pgstore.Transaction, error)
 }
 
 type TransactionService struct {
 	pool    *pgxpool.Pool
-	queries *pgstore.Queries
+	queries transactionQueries
 }
 
-func NewTransactionService(pool *pgxpool.Pool) ITransactionService {
+func NewTransactionService(pool *pgxpool.Pool, q transactionQueries) ITransactionService {
 	return &TransactionService{
 		pool:    pool,
-		queries: pgstore.New(pool),
+		queries: q,
 	}
 }
 

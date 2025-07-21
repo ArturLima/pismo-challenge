@@ -9,6 +9,7 @@ import (
 	_ "github.com/ArturLima/pismo/docs" // This is required to load the Swagger docs
 	"github.com/ArturLima/pismo/internal/api"
 	"github.com/ArturLima/pismo/internal/services"
+	"github.com/ArturLima/pismo/internal/store/pgstore"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
@@ -37,10 +38,13 @@ func main() {
 		panic(err)
 	}
 
+	accountSvc := services.NewAccountService(pool, pgstore.New(pool))
+	transactionSvc := services.NewTransactionService(pool, pgstore.New(pool))
+
 	api := api.Api{
 		Router:             chi.NewMux(),
-		AccountService:     services.NewAccountService(pool),
-		TransactionService: services.NewTransactionService(pool),
+		AccountService:     accountSvc,
+		TransactionService: transactionSvc,
 	}
 
 	api.BindRoutes()

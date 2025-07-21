@@ -7,6 +7,11 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+type accountQueries interface {
+	CreateAccount(ctx context.Context, document string) (pgstore.Account, error)
+	GetAccountById(ctx context.Context, id int32) (pgstore.Account, error)
+}
+
 type IAccountService interface {
 	CreateAccount(ctx context.Context, document string) (pgstore.Account, error)
 	GetAccount(ctx context.Context, accountId int32) (pgstore.Account, error)
@@ -14,13 +19,13 @@ type IAccountService interface {
 
 type AccountService struct {
 	pool    *pgxpool.Pool
-	queries *pgstore.Queries
+	queries accountQueries
 }
 
-func NewAccountService(pool *pgxpool.Pool) IAccountService {
+func NewAccountService(pool *pgxpool.Pool, q accountQueries) IAccountService {
 	return &AccountService{
 		pool:    pool,
-		queries: pgstore.New(pool),
+		queries: q,
 	}
 }
 
