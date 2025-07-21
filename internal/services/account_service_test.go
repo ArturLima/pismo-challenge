@@ -7,51 +7,46 @@ import (
 	"testing"
 
 	"github.com/ArturLima/pismo/internal/store/pgstore"
+	"github.com/ArturLima/pismo/test/mocks"
+	"github.com/golang/mock/gomock"
 )
 
-type mockAccountQueries struct {
-	createAccountFake  func(ctx context.Context, document string) (pgstore.Account, error)
-	getAccountByIdFake func(ctx context.Context, id int32) (pgstore.Account, error)
-}
-
-func (m *mockAccountQueries) CreateAccount(ctx context.Context, document string) (pgstore.Account, error) {
-	return m.createAccountFake(ctx, document)
-}
-
-func (m *mockAccountQueries) GetAccountById(ctx context.Context, id int32) (pgstore.Account, error) {
-	return m.getAccountByIdFake(ctx, id)
-}
-
-func TestAccountService_createAccoutn_success(t *testing.T) {
+func TestAccountService_CreateAccount_Success(t *testing.T) {
 	result := pgstore.Account{ID: 1, Document: "1234"}
 
-	service := NewAccountService(nil, &mockAccountQueries{
-		createAccountFake: func(ctx context.Context, document string) (pgstore.Account, error) {
-			if document != "1234" {
-				t.Fatalf("expected document '1234', got '%s'", document)
-			}
-			return result, nil
-		},
-	})
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	account, err := service.CreateAccount(context.Background(), "1234")
+	mockQ := mocks.NewMockaccountQueries(ctrl)
+	mockQ.
+		EXPECT().
+		CreateAccount(gomock.Any(), "1234").
+		Return(result, nil)
+
+	svc := NewAccountService(nil, mockQ)
+
+	final, err := svc.CreateAccount(context.Background(), "1234")
 	if err != nil {
-		t.Fatalf("expected no error, got %v", err)
+		t.Fatalf("esperava sem erro, mas recebeu: %v", err)
 	}
-	if !reflect.DeepEqual(account, result) {
-		t.Fatalf("expected account %v, got %v", result, account)
+
+	if !reflect.DeepEqual(final, result) {
+		t.Fatalf("esperava %v, mas recebeu %v", result, final)
 	}
 }
 
 func TestAccountService_createAccount_error(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	service := NewAccountService(nil, &mockAccountQueries{
-		createAccountFake: func(ctx context.Context, document string) (pgstore.Account, error) {
-			return pgstore.Account{}, fmt.Errorf("error creating account")
-		},
-	})
+	mockQ := mocks.NewMockaccountQueries(ctrl)
+
+	mockQ.EXPECT().CreateAccount(gomock.Any(), "1234").Return(pgstore.Account{}, fmt.Errorf("db is down"))
+
+	service := NewAccountService(nil, mockQ)
 
 	_, err := service.CreateAccount(context.Background(), "1234")
+
 	if err == nil {
 		t.Fatal("expected an error, got nil")
 	}
@@ -61,16 +56,16 @@ func TestAccountService_createAccount_error(t *testing.T) {
 func TestAccountService_getAccount_success(t *testing.T) {
 	result := pgstore.Account{ID: 1, Document: "1234"}
 
-	service := NewAccountService(nil, &mockAccountQueries{
-		getAccountByIdFake: func(ctx context.Context, id int32) (pgstore.Account, error) {
-			if id != 1 {
-				t.Fatalf("expected id 1, got %d", id)
-			}
-			return result, nil
-		},
-	})
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	account, err := service.GetAccount(context.Background(), 1)
+	mocksQ := mocks.NewMockaccountQueries(ctrl)
+
+	mocksQ.EXPECT().GetAccountById(gomock.Any(), int32(1)).Return(result, nil)
+
+	service := NewAccountService(nil, mocksQ)
+
+	account, err := service.GetAccount(context.Background(), int32(1))
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -78,17 +73,20 @@ func TestAccountService_getAccount_success(t *testing.T) {
 	if !reflect.DeepEqual(account, result) {
 		t.Fatalf("expected account %v, got %v", result, account)
 	}
-
 }
 
 func TestAccountService_getAccount_error(t *testing.T) {
-	service := NewAccountService(nil, &mockAccountQueries{
-		getAccountByIdFake: func(ctx context.Context, id int32) (pgstore.Account, error) {
-			return pgstore.Account{}, fmt.Errorf("error getting account")
-		},
-	})
 
-	_, err := service.GetAccount(context.Background(), 1)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockQ := mocks.NewMockaccountQueries(ctrl)
+
+	mockQ.EXPECT().GetAccountById(gomock.Any(), int32(0)).Return(pgstore.Account{}, fmt.Errorf("Not found"))
+
+	service := NewAccountService(nil, mockQ)
+
+	_, err := service.GetAccount(context.Background(), 0)
 	if err == nil {
 		t.Fatal("expected an error, got nil")
 	}
