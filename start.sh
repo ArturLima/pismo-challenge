@@ -10,6 +10,6 @@ tern migrate \
   --migrations /app/migrations
 
 echo "✅ Migrations executadas!"
-
 echo "🚀 Iniciando aplicação..."
+
 exec /app/app
