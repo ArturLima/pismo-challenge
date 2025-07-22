@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"sync"
 
 	"github.com/ArturLima/pismo/internal/store/pgstore"
 	"github.com/ArturLima/pismo/internal/useCases/transaction"
@@ -18,6 +19,7 @@ type ITransactionService interface {
 }
 
 type TransactionService struct {
+	mu      sync.Mutex
 	pool    *pgxpool.Pool
 	queries transactionQueries
 }
@@ -30,6 +32,9 @@ func NewTransactionService(pool *pgxpool.Pool, q transactionQueries) ITransactio
 }
 
 func (s *TransactionService) CreateTransaction(ctx context.Context, request transaction.CreateTransactionRequest) (pgstore.Transaction, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	var pgAmount pgtype.Numeric
 	if err := pgAmount.Scan(request.Amount); err != nil {
 		return pgstore.Transaction{}, err
